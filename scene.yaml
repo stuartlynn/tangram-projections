@@ -31,6 +31,14 @@ styles:
                     float lon2x_m (float lon) { return deg2rad(lon)*EARTH_RADIUS; }
                     
                     // convert from lat/long to albers -- from https://gist.github.com/RandomEtc/476238
+                    vec2 lambert_cyl(float lat, float lng, float lng0){
+                        
+                        float x =  lng - lng0;
+                        float y = sin(lat);
+
+                        return vec2(x,y);
+                    }
+
                     vec2 albers(float lat, float lng, float lat0, float lng0, float phi1, float phi2) {
                         float n = 0.5 * (sin(phi1) + sin(phi2));
                         float c = cos(phi1);
@@ -56,7 +64,9 @@ styles:
                     float phi1 = deg2rad(y2lat_m(u_map_position.y) + 10.);
                     // Standard_Parallel_2
                     float phi2 = deg2rad(y2lat_m(u_map_position.y) - 10.);
-                    position.xy = albers(lat, lon, centerlat, centerlon, phi1, phi2)*EARTH_RADIUS;
+                    vec2 v2   = lambert_cyl(lat,lon, centerlon);
+                    position.xy =  vec2(  lon2x_m(lon) -u_map_position.x,  lat2y_m(lat)  -u_map_position.y);
+                    //position.xy = albers(lat, lon, centerlat, centerlon, phi1, phi2)*EARTH_RADIUS;
     alberslines:
         base: lines
         mix: albers
