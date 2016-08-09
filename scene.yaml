@@ -31,7 +31,6 @@ styles:
                     float lon2x_m (float lon) { return deg2rad(lon)*EARTH_RADIUS; }
                     
                     // convert from lat/long to albers -- from https://gist.github.com/RandomEtc/476238
-                    vec2 
                     vec2 albers(float lat, float lng, float lat0, float lng0, float phi1, float phi2) {
                         float n = 0.5 * (sin(phi1) + sin(phi2));
                         float c = cos(phi1);
