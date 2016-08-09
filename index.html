@@ -11,6 +11,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Simple demo – Tangram</title>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.css" />
 
     <style>
@@ -33,7 +37,7 @@
     <div id="map"></div>
 
     <!-- leaflet -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.js"></script>-->
 
     <!-- Main tangram library -->
     <script src="https://mapzen.com/tangram/0.8/tangram.min.js"></script>
@@ -50,9 +54,21 @@
 
         layer.addTo(map);
 
+        var data = cartodb.createLayer(map,{user_name: 'stuartlynn', 
+            type: 'cartodb', 
+            sublayers:[{
+                sql: 'SELECT ST_Transform(the_geom, 42303) AS the_geom_webmercator, winner, vote_diff_sqrt, cartodb_id FROM stuartlynn.election2012_prop_symbol' ,
+                cartocss:'/** category visualization */ @blue:rgb(55,79,127); @red:rgb(158,55,51); //@test: 75; #election2012_prop_symbol { marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 0.25; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: [vote_diff_sqrt]; marker-allow-overlap: true; } #election2012_prop_symbol[winner="obama"] { marker-fill: #2E5387; marker-line-color: lighten(#2E5387,45); } #election2012_prop_symbol[winner="romney"] { marker-fill: #D6301D; marker-line-color:lighten(#D6301D,45); } #election2012_prop_symbol[winner="tie"] { marker-fill: transparent; }'
+            }]
+        });
+
+        data.addTo(map);
+        
         map.setView([40.70531887544228, -74.00976419448853], 3);
 
     </script>
 
   </body>
 </html>
+
+
