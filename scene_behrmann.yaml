@@ -30,15 +30,6 @@ styles:
                     float lat2y_m (float lat) { return EARTH_RADIUS*log(tan(QUARTER_PI+ deg2rad(lat)/2.0)); }
                     float lon2x_m (float lon) { return deg2rad(lon)*EARTH_RADIUS; }
                     
-                    // Projection type 
-                    //'mercator' : 0,
-                    //'albers_dynamic' : 1,
-                    //'albers_NA' : 2,
-                    //'behrmann_Equal_Area_Cylindrical': 3, 
-                    //'polar' : 4,
-                    //'robinsons' : 5 
-                    int proj = 2;    
-                    
                     // convert from lat/long to albers -- from https://gist.github.com/RandomEtc/476238
                     vec2 lambert_cyl(float lat, float lng, float lng0){
                         
@@ -73,26 +64,9 @@ styles:
                     float phi1 = deg2rad(y2lat_m(u_map_position.y) + 10.);
                     // Standard_Parallel_2
                     float phi2 = deg2rad(y2lat_m(u_map_position.y) - 10.);
-                    
-                    if(proj ==0){
-                        position.xy = vec2( lon2x_m(lon) -u_map_position.x,  lat2y_m(lat)  -u_map_position.y);
-                    }
-                    if(proj == 1){
-                        position.xy = albers(lat, lon, centerlat, centerlon, phi1, phi2)*EARTH_RADIUS;
-                    } 
-                    if(proj == 2){
-                        centerlon  = deg2rad(-74.365);
-                        centerlat  = deg2rad(19.36);
-                        phi1  = deg2rad(19.36 + 10.0);
-                        phi2  = deg2rad(19.36 - 10.0);
-
-                        vec2 v2 =  albers(lat, lon, centerlat, centerlon, phi1, phi2)*EARTH_RADIUS;
-                        position.xy =  vec2(  v2.x -u_map_position.x,  v2.y  -u_map_position.y);
-                    }
-                    if(proj == 3){
-                        vec2 v2   = lambert_cyl(lat,lon, 0.0);
-                        position.xy =  vec2( v2.x -u_map_position.x,  v2.y  -u_map_position.y);
-                    }
+                    vec2 v2   = lambert_cyl(lat,lon, centerlon);
+                    position.xy =  vec2(  lon2x_m(lon) -u_map_position.x,  lat2y_m(lat)  -u_map_position.y);
+                    //position.xy = albers(lat, lon, centerlat, centerlon, phi1, phi2)*EARTH_RADIUS;
     alberslines:
         base: lines
         mix: albers

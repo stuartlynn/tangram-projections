@@ -29,11 +29,40 @@
             width: 100%;
             position: absolute;
         }
+        #picker{
+            position:absolute;
+            right: 20px; 
+            top: 20px;
+            padding : 20px;
+            margin:0px;
+            z-index: 20; 
+            background-color: white;
+            opacity: 0.7;
+        }
+        #picker ul{
+            list-style:none;
+            margin:0px;
+            padding: 0px;
+        }
+        #picker a{
+            color:black;
 
+        }
     </style>
   </head>
 
   <body>
+
+      <div id='picker'>
+        <ul>
+            <li><a href='#' data-transform='albers_dynamic'>Albers Dynamic</a></li>
+            <li><a href='#' data-transform='albers_NA'>Albers NA</a></li>
+            <li><a href='#' data-transform='mercator'>Mercator</a></li>
+            <li><a href='#' data-transform='behrmann_Equal_Area_Cylindrical'> Behrmann Equal Area Cylindrical</a></li>
+            <li><a href='#' data-transform='polar'>Polar</a></li>
+            <li><a href='#' data-transform='robinsons'>Robinsons</a></li>
+        </ul>
+      </div>
     <div id="map"></div>
 
     <!-- leaflet -->
@@ -54,10 +83,31 @@
         window.tg_layer = layer;
         layer.addTo(map);
 
+        $(function(){
+            $('#picker a').click(function(e){
+                var lookup = { 
+                    'mercator' : 1,
+                    'albers_dynamic' : 2,
+                    'albers_NA' : 3,
+                    'albers_dynamic' : 4, 
+                    'behrmann_Equal_Area_Cylindrical': 5, 
+                    'polar' : 6,
+                    'robinsons' : 7 
+                }
+                var trans_id  = lookup[$(e.target).data().transform]
+
+                layer.scene.config.styles.albers.shaders.blocks.global = layer.scene.config.styles.albers.shaders.blocks.global.replace(/proj = \d/, 'proj = '+trans_id)
+                console.log( layer.scene.config.styles.albers.shaders.blocks.global) 
+                layer.scene.updateConfig()
+
+
+            }.bind(this))
+        })
+
         var data = cartodb.createLayer(map,{user_name: 'stuartlynn', 
             type: 'cartodb', 
             sublayers:[{
-                sql: 'SELECT ST_Transform(the_geom, 42303) AS the_geom_webmercator, winner, vote_diff_sqrt, cartodb_id FROM stuartlynn.election2012_prop_symbol' ,
+                sql: 'SELECT ST_Transform(the_geom, 54017) AS the_geom_webmercator, winner, vote_diff_sqrt, cartodb_id FROM stuartlynn.election2012_prop_symbol' ,
                 cartocss:'/** category visualization */ @blue:rgb(55,79,127); @red:rgb(158,55,51); //@test: 75; #election2012_prop_symbol { marker-fill-opacity: 0.9; marker-line-color: #FFF; marker-line-width: 0.25; marker-line-opacity: 1; marker-placement: point; marker-type: ellipse; marker-width: [vote_diff_sqrt]; marker-allow-overlap: true; } #election2012_prop_symbol[winner="obama"] { marker-fill: #2E5387; marker-line-color: lighten(#2E5387,45); } #election2012_prop_symbol[winner="romney"] { marker-fill: #D6301D; marker-line-color:lighten(#D6301D,45); } #election2012_prop_symbol[winner="tie"] { marker-fill: transparent; }'
             }]
         });
